@@ -55,11 +55,9 @@ const styles = StyleSheet.create({
         padding: 25,
         margin: 4,
         borderRadius: 10,
-        elevation: 5,
         flex: 2,
         alignItems:"center",
         alignContent:"center",
         justifyContent:"center"
     }
-
 });

@@ -10,6 +10,12 @@ export type RootStackParamList = {
   ROOT: undefined;
   HOME: undefined;
   SELECT_QUIZ_TYPE: undefined;
+  QUIZ: {
+    numberOfQuestion: number,
+    category?: string,
+    difficulty?: string,
+    type?: string
+  };
   ScoreBoard: undefined;
   NotFound: undefined;
 };
@@ -32,6 +38,15 @@ export type SelectQuizTypeScreenNavigationProp = StackNavigationProp<
 export type SelectQuizTypeProps = {
   route: SelectQuizTypeScreenRouteProp;
   navigation: SelectQuizTypeScreenNavigationProp;
+};
+//////////////////////
+export type QuizScreenRouteProp = RouteProp<RootStackParamList, 'QUIZ'>;
+export type QuizScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'QUIZ'>;
+export type QuizProps = {
+  route: QuizScreenRouteProp;
+  navigation: QuizScreenNavigationProp;
 };
 
 //////////////////////

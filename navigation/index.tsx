@@ -10,6 +10,7 @@ import { ColorSchemeName } from 'react-native';
 import HomeScreen from '../screens/HomeScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
+import QuizScreen from '../screens/quiz/QuizScreen';
 import SelectQuizTypeScreen from '../screens/quiz/SelectQuizType';
 import SplashScreen from '../screens/SplashScreen';
 import { RootStackParamList } from '../types';
@@ -41,6 +42,7 @@ function RootNavigator() {
       <Stack.Screen name="ROOT" component={SplashScreen} />
       <Stack.Screen name="HOME" component={HomeScreen} />
       <Stack.Screen name="SELECT_QUIZ_TYPE" component={SelectQuizTypeScreen} />
+      <Stack.Screen name="QUIZ" component={QuizScreen} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
   );
