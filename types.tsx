@@ -3,16 +3,42 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
+import { RouteProp } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+
 export type RootStackParamList = {
-  Root: undefined;
+  ROOT: undefined;
+  HOME: undefined;
+  SELECT_QUIZ_TYPE: undefined;
+  ScoreBoard: undefined;
   NotFound: undefined;
 };
 
+
+export type HomeScreenRouteProp = RouteProp<RootStackParamList, "HOME">;
+export type HomeScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'HOME'>;
+export type HomeProps = {
+  route: HomeScreenRouteProp;
+  navigation: HomeScreenNavigationProp;
+};
+
+//////////////////////
+export type SelectQuizTypeScreenRouteProp = RouteProp<RootStackParamList, 'SELECT_QUIZ_TYPE'>;
+export type SelectQuizTypeScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'SELECT_QUIZ_TYPE'>;
+export type SelectQuizTypeProps = {
+  route: SelectQuizTypeScreenRouteProp;
+  navigation: SelectQuizTypeScreenNavigationProp;
+};
+
+//////////////////////
 export type BottomTabParamList = {
   TabOne: undefined;
   TabTwo: undefined;
 };
-
 export type TabOneParamList = {
   TabOneScreen: undefined;
 };
