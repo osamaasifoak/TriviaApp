@@ -76,16 +76,35 @@ export default function QuizScreen() {
         if (seconds > 0) {
             setTimeout(() => setSeconds(seconds - 1), 1000);
         } else {
-            setSeconds('BOOOOM!');
+            setSeconds(0);
+            if (quizData.length !== questionCount)
+                setQuestionCount(questionCount + 1)
         }
-    }, []);
+    });
+
+    function onPressAnswer(userSelectedAnwer: any){
+        setSelectedAnswer(userSelectedAnwer)
+        if (selectedAnswer === quizData[questionCount].correctAnswer) {
+            setCalculatingResult({
+                ...calculatingResult,
+                correctAnswer: calculatingResult.correctAnswer + 1,
+                totalTime: calculatingResult.totalTime + seconds,
+
+            })
+        } else {
+            setCalculatingResult({
+                ...calculatingResult,
+                incorrectAnswer: calculatingResult.incorrectAnswer + 1,
+                totalTime: calculatingResult.totalTime + seconds,
+            })
+        }
+        // setSeconds(0)
+        // setSelectedAnswer(null)
+        // if (quizData.length !== questionCount)
+        //     setQuestionCount(questionCount + 1)
+    }
 
     if (!loading) {
-        // console.log("asdas", quizData)
-        // // quizData[questionCount].incorrectAnswers?.push(quizData[questionCount]?.correctAnswer);
-        // var options =  quizData[questionCount].incorrectAnswers
-        // var it = options[Math.floor(Math.random() * options.length)];
-        // console.log(options);
         return (
 
             <SafeAreaView style={{ flex: 1 }}>
@@ -94,12 +113,18 @@ export default function QuizScreen() {
                         <Text style={styles.title}>Timer </Text>
                         <Text style={styles.title}>{seconds}</Text>
                     </View>
-                    {selectionTitle(`${questionCount + 1}:- ${quizData[questionCount].question}`)}
+                    {/* {selectionTitle(`Q${questionCount + 1}) ${quizData[questionCount].question}`)} */}
                     <View style={{ marginVertical: 10 }}></View>
                     {
                         quizData[questionCount].incorrectAnswers.map((e, index) =>
-                            <TouchableOpacity onPress={() => { setSelectedAnswer(e) }} >
-                                <View key={index} style={{ width: "100%", padding: 10, borderRadius: 5, marginVertical: 10, backgroundColor: selectedAnswer === e ? "#b1b3af" : "#eee" }}
+                            <TouchableOpacity onPress={() => {onPressAnswer(e) }} >
+                                <View key={index} style={{
+                                    width: "100%",
+                                    padding: 10, borderRadius: 5, marginVertical: 10,
+                                    backgroundColor: selectedAnswer === quizData[questionCount].correctAnswer ? "#26c93f" :
+                                    selectedAnswer !== null && quizData[questionCount].incorrectAnswers.includes(e) ?"#e32600":
+                                    "#eee"
+                                }}
                                     lightColor="#eee"
                                     darkColor="rgba(255,255,255,0.1)" >
                                     <Text style={[styles.title, { fontSize: 14, fontWeight: "500" }]}>{`${index + 1}: ${e}`}</Text>
@@ -108,7 +133,7 @@ export default function QuizScreen() {
                         )
                     }
 
-                    {selectedAnswer !== null ? <TouchableOpacity onPress={() => {
+                    {/* {selectedAnswer !== null ? <TouchableOpacity onPress={() => {
                         if (selectedAnswer === quizData[questionCount].correctAnswer) {
                             setCalculatingResult({
                                 ...calculatingResult,
@@ -116,17 +141,18 @@ export default function QuizScreen() {
                                 totalTime: calculatingResult.totalTime + seconds,
 
                             })
-                            
+
                         } else {
                             setCalculatingResult({
-                                ...calculatingResult, 
-                                incorrectAnswer: calculatingResult.incorrectAnswer + 1, 
+                                ...calculatingResult,
+                                incorrectAnswer: calculatingResult.incorrectAnswer + 1,
                                 totalTime: calculatingResult.totalTime + seconds,
                             })
                         }
                         setSeconds(0)
                         setSelectedAnswer(null)
-                        setQuestionCount(questionCount+1)    
+                        if (quizData.length !== questionCount)
+                            setQuestionCount(questionCount + 1)
 
                     }} style={{ marginTop: 15 }}>
                         <View style={styles.btnContainer}
@@ -134,7 +160,7 @@ export default function QuizScreen() {
                             darkColor="rgba(255,255,255,0.1)" >
                             <Text style={[styles.title, { color: "#ffffff" }]}>{quizData.length === questionCount ? 'Finish' : 'Next'}</Text>
                         </View>
-                    </TouchableOpacity> : null}
+                    </TouchableOpacity> : null} */}
                 </View>
             </SafeAreaView>
         );
