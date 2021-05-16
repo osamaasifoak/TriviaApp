@@ -64,7 +64,7 @@ export default function SelectQuizTypeScreen() {
                 onValueChange={onValueChange}>
                 {
                     //@ts-expect-error
-                    pickerItem.map((e) => <Picker.Item label={e.label} value={e.value} />)
+                    pickerItem.map((e,i) => <Picker.Item key={i} label={e.label} value={e.value} />)
                 }
 
             </Picker>
