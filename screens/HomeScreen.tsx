@@ -19,7 +19,7 @@ export default function HomeScreen() {
             </View>
             <View style={{ flexDirection: "row", padding: 10 }}>
                 {btnContainer("Start Quiz", () => { navigate(Routes.SELECT_QUIZ_TYPE)})}
-                {btnContainer("Score Board", () => { })}
+                {btnContainer("Score Board", () => { navigate(Routes.SCOREBOARD)})}
 
             </View>
         </View>

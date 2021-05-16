@@ -16,7 +16,7 @@ export type RootStackParamList = {
     difficulty?: string,
     type?: string
   };
-  ScoreBoard: undefined;
+  SCOREBOARD: undefined;
   NotFound: undefined;
 };
 
@@ -47,6 +47,15 @@ export type QuizScreenNavigationProp = StackNavigationProp<
 export type QuizProps = {
   route: QuizScreenRouteProp;
   navigation: QuizScreenNavigationProp;
+};
+//////////////////////
+export type ScoreboardScreenRouteProp = RouteProp<RootStackParamList, 'SCOREBOARD'>;
+export type ScoreboardScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'SCOREBOARD'>;
+export type ScoreboardProps = {
+  route: ScoreboardScreenRouteProp;
+  navigation: ScoreboardScreenNavigationProp;
 };
 
 //////////////////////
