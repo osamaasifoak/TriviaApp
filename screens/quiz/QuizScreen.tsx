@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { CommonActions, useNavigation, useRoute } from '@react-navigation/core';
 import * as React from 'react';
@@ -13,14 +14,16 @@ import { QuizScreenRouteProp } from '../../types';
 export default function QuizScreen() {
     const route = useRoute<QuizScreenRouteProp>();
     const [loading, setLoading] = useState<boolean>(true);
+    const [disabledOtionTab, setDisabledOtionTab] = useState<boolean>(false);
     const [seconds, setSeconds] = React.useState<any>(10);
     const [questionCount, setQuestionCount] = React.useState<number>(0);
     const [quizData, setQuizData] = useState<SortBy[]>([]);
-    const [selectedAnswer, setSelectedAnswer] = useState<any>();
+    const [selectedAnswer, setSelectedAnswer] = useState<any>(null);
     const [calculatingResult, setCalculatingResult] = useState({
         correctAnswer: 0,
         incorrectAnswer: 0,
-        totalTime: 0
+        totalTime: 0,
+        dateTime: Date().toLocaleString()
     });
     const params = route.params;
     // console.log(`https://opentdb.com/api.php?amount=${params.numberOfQuestion}&category=${params.category}&difficulty=${params.difficulty}&type=${params.type}`)
@@ -76,34 +79,54 @@ export default function QuizScreen() {
         if (seconds > 0) {
             setTimeout(() => setSeconds(seconds - 1), 1000);
         } else {
-            setSeconds(0);
-            if (quizData.length !== questionCount)
-                setQuestionCount(questionCount + 1)
+            setSeconds(0)
+            if (quizData.length !== questionCount) {
+                // setSeconds(10);
+                // setQuestionCount((prev) => prev + 1)
+                setSelectedAnswer(quizData[questionCount].correctAnswer)
+                setDisabledOtionTab(false)
+                console.log(quizData, questionCount)
+            } 
         }
     });
 
-    function onPressAnswer(userSelectedAnwer: any){
+   async function onPressAnswer(userSelectedAnwer: any) {
         setSelectedAnswer(userSelectedAnwer)
-        if (selectedAnswer === quizData[questionCount].correctAnswer) {
-            setCalculatingResult({
-                ...calculatingResult,
-                correctAnswer: calculatingResult.correctAnswer + 1,
-                totalTime: calculatingResult.totalTime + seconds,
+        setDisabledOtionTab(true)
+        
+        // setTimeout(() => {
+        console.log("this is running automatically")
+        setSeconds(0)
+        if (quizData.length !== questionCount) {
+            if (selectedAnswer === quizData[questionCount].correctAnswer) {
+                setCalculatingResult({
+                    ...calculatingResult,
+                    correctAnswer: calculatingResult.correctAnswer + 1,
+                    totalTime: calculatingResult.totalTime + seconds,
+                    dateTime:  Date().toLocaleString()
 
-            })
-        } else {
-            setCalculatingResult({
-                ...calculatingResult,
-                incorrectAnswer: calculatingResult.incorrectAnswer + 1,
-                totalTime: calculatingResult.totalTime + seconds,
-            })
+                })
+                
+            } else {
+                setCalculatingResult({
+                    ...calculatingResult,
+                    incorrectAnswer: calculatingResult.incorrectAnswer + 1,
+                    totalTime: calculatingResult.totalTime + seconds,
+                    dateTime:  Date().toLocaleString()
+                })
+            }
+            
         }
-        // setSeconds(0)
-        // setSelectedAnswer(null)
-        // if (quizData.length !== questionCount)
-        //     setQuestionCount(questionCount + 1)
+        // }, 100
+        // )
     }
-
+    const storeData = async (value: any) => {
+        try {
+          await AsyncStorage.setItem('scoreboard', 'I like to save it.');
+        } catch (error) {
+          console.log(error)
+        }
+      };
     if (!loading) {
         return (
 
@@ -113,17 +136,20 @@ export default function QuizScreen() {
                         <Text style={styles.title}>Timer </Text>
                         <Text style={styles.title}>{seconds}</Text>
                     </View>
-                    {/* {selectionTitle(`Q${questionCount + 1}) ${quizData[questionCount].question}`)} */}
+                    {selectionTitle(`Q${questionCount}) ${quizData[questionCount].question}`)}
                     <View style={{ marginVertical: 10 }}></View>
                     {
                         quizData[questionCount].incorrectAnswers.map((e, index) =>
-                            <TouchableOpacity onPress={() => {onPressAnswer(e) }} >
+                            <TouchableOpacity onPress={() => { onPressAnswer(e) }} disabled={disabledOtionTab}>
                                 <View key={index} style={{
                                     width: "100%",
                                     padding: 10, borderRadius: 5, marginVertical: 10,
-                                    backgroundColor: selectedAnswer === quizData[questionCount].correctAnswer ? "#26c93f" :
-                                    selectedAnswer !== null && quizData[questionCount].incorrectAnswers.includes(e) ?"#e32600":
-                                    "#eee"
+                                    backgroundColor: getOptionTabColor(e)
+
+
+                                    // selectedAnswer === quizData[questionCount].correctAnswer ? "#26c93f" :
+                                    // selectedAnswer !== null && quizData[questionCount].incorrectAnswers.includes(e) ?"#e32600"
+
                                 }}
                                     lightColor="#eee"
                                     darkColor="rgba(255,255,255,0.1)" >
@@ -133,26 +159,12 @@ export default function QuizScreen() {
                         )
                     }
 
-                    {/* {selectedAnswer !== null ? <TouchableOpacity onPress={() => {
-                        if (selectedAnswer === quizData[questionCount].correctAnswer) {
-                            setCalculatingResult({
-                                ...calculatingResult,
-                                correctAnswer: calculatingResult.correctAnswer + 1,
-                                totalTime: calculatingResult.totalTime + seconds,
-
-                            })
-
-                        } else {
-                            setCalculatingResult({
-                                ...calculatingResult,
-                                incorrectAnswer: calculatingResult.incorrectAnswer + 1,
-                                totalTime: calculatingResult.totalTime + seconds,
-                            })
-                        }
-                        setSeconds(0)
+                    {selectedAnswer !== null ? <TouchableOpacity onPress={() => {
+                        setSeconds(10)
                         setSelectedAnswer(null)
+                        setDisabledOtionTab(false)
                         if (quizData.length !== questionCount)
-                            setQuestionCount(questionCount + 1)
+                            setQuestionCount((prev) => prev + 1)
 
                     }} style={{ marginTop: 15 }}>
                         <View style={styles.btnContainer}
@@ -160,7 +172,7 @@ export default function QuizScreen() {
                             darkColor="rgba(255,255,255,0.1)" >
                             <Text style={[styles.title, { color: "#ffffff" }]}>{quizData.length === questionCount ? 'Finish' : 'Next'}</Text>
                         </View>
-                    </TouchableOpacity> : null} */}
+                    </TouchableOpacity> : null}
                 </View>
             </SafeAreaView>
         );
@@ -194,6 +206,22 @@ export default function QuizScreen() {
 
             </Picker>
         </View>
+    }
+
+    function getOptionTabColor(value: string) {
+        console.log("selectedAnswer", selectedAnswer)
+        if (selectedAnswer === null || selectedAnswer === undefined) {
+            return "#eee";
+        }
+        else if (selectedAnswer === value && quizData[questionCount].correctAnswer === selectedAnswer) {
+            return "#26c93f";
+        }
+        else if (quizData[questionCount].correctAnswer === value) {
+            return "#26c93f";
+        }
+        else {
+            return "#e32600";
+        }
     }
 }
 
