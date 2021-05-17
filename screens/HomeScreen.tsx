@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions, useNavigation } from '@react-navigation/core';
 import * as React from 'react';
 import { useEffect } from 'react';
@@ -19,7 +20,13 @@ export default function HomeScreen() {
             </View>
             <View style={{ flexDirection: "row", padding: 10 }}>
                 {btnContainer("Start Quiz", () => { navigate(Routes.SELECT_QUIZ_TYPE)})}
-                {btnContainer("Score Board", () => { navigate(Routes.SCOREBOARD)})}
+                {btnContainer("Score Board", async () => {
+                    var data = await AsyncStorage.getItem('scoreboard');
+                    //@ts-expect-error
+                    var item = JSON.parse(data);
+                    console.log(item)
+                    // navigate(Routes.SCOREBOARD)
+                })}
 
             </View>
         </View>
