@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { CommonActions, useNavigation, useRoute } from '@react-navigation/core';
+import moment from 'moment';
 import * as React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
@@ -8,10 +9,12 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Pulse } from 'react-native-animated-spinkit';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text } from '../../components/Themed';
+import Routes from '../../constants/Routes';
 import { Convert, SortBy } from '../../models/QuizModel';
-import { QuizScreenRouteProp } from '../../types';
+import { QuizScreenRouteProp, ResultScreenNavigationProp } from '../../types';
 
 export default function QuizScreen() {
+    const navigation = useNavigation<ResultScreenNavigationProp>();
     const route = useRoute<QuizScreenRouteProp>();
     const [loading, setLoading] = useState<boolean>(true);
     const [disabledOtionTab, setDisabledOtionTab] = useState<boolean>(false);
@@ -19,13 +22,16 @@ export default function QuizScreen() {
     const [questionCount, setQuestionCount] = React.useState<number>(0);
     const [quizData, setQuizData] = useState<SortBy[]>([]);
     const [selectedAnswer, setSelectedAnswer] = useState<any>(null);
+    const params = route.params;
+    let now = new Date();
+    var dateString = moment(now).format('YYYY-MM-DD');
     const [calculatingResult, setCalculatingResult] = useState({
         correctAnswer: 0,
         incorrectAnswer: 0,
         totalTime: 0,
-        dateTime: Date().toLocaleString()
+        totalQuestion: params.numberOfQuestion,
+        dateTime: dateString
     });
-    const params = route.params;
     // console.log(`https://opentdb.com/api.php?amount=${params.numberOfQuestion}&category=${params.category}&difficulty=${params.difficulty}&type=${params.type}`)
     useEffect(() => {
         async function getQuestions() {
@@ -142,9 +148,17 @@ export default function QuizScreen() {
     }
     const storeData = async () => {
         try {
-            // var data = await AsyncStorage.getItem('scoreboard');
+            var data = await AsyncStorage.getItem('scoreboard');
+            //@ts-expect-error
+            console.log("JSON ", JSON.parse((data)))
+            if (data !== null) {
+                let parsedJson = JSON.parse(data);
+                parsedJson = [...parsedJson, calculatingResult]
+                await AsyncStorage.setItem('scoreboard', JSON.stringify(parsedJson));
+            } else {
+                await AsyncStorage.setItem('scoreboard', JSON.stringify([calculatingResult]));
+            }
             // // var itemList = JSON.parse();
-            await AsyncStorage.setItem('scoreboard', JSON.stringify(calculatingResult));
         } catch (error) {
             console.log(error)
         }
@@ -163,8 +177,8 @@ export default function QuizScreen() {
                     <View style={{ marginVertical: 10 }}></View>
                     {
                         quizData[questionCount].incorrectAnswers.map((e, index) =>
-                            <TouchableOpacity onPress={() => { onPressAnswer(e) }} disabled={disabledOtionTab}>
-                                <View key={index} style={{
+                            <TouchableOpacity key={index} onPress={() => { onPressAnswer(e) }} disabled={disabledOtionTab}>
+                                <View style={{
                                     width: "100%",
                                     padding: 10, borderRadius: 5, marginVertical: 10,
                                     backgroundColor: getOptionTabColor(e)
@@ -180,6 +194,18 @@ export default function QuizScreen() {
                     {(selectedAnswer !== null || quizData.length - 1 === questionCount) ? <TouchableOpacity onPress={async () => {
                         if (quizData.length - 1 === questionCount) {
                             await storeData()
+
+                            // navigation.dispatch(CommonActions.reset({
+                            //     index: 1, routes: [
+                            //         {
+                            //             name: Routes.RESULT,
+                            //             params:calculatingResult
+                            //         },
+                            //     ]
+                            // }));
+                            navigation.pop();
+                            //@ts-expect-error
+                            navigation.navigate(Routes.RESULT, calculatingResult);
                         }
                         else {
                             setSelectedAnswer(null)

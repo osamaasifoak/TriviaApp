@@ -21,11 +21,11 @@ export default function HomeScreen() {
             <View style={{ flexDirection: "row", padding: 10 }}>
                 {btnContainer("Start Quiz", () => { navigate(Routes.SELECT_QUIZ_TYPE)})}
                 {btnContainer("Score Board", async () => {
-                    var data = await AsyncStorage.getItem('scoreboard');
-                    //@ts-expect-error
-                    var item = JSON.parse(data);
-                    console.log(item)
-                    // navigate(Routes.SCOREBOARD)
+                    // var data = await AsyncStorage.getItem('scoreboard');
+                    // //@ts-expect-error
+                    // var item = JSON.parse(data);
+                    // console.log(item)
+                    navigate(Routes.SCOREBOARD)
                 })}
 
             </View>

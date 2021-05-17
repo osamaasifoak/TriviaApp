@@ -11,6 +11,7 @@ import HomeScreen from '../screens/HomeScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import QuizScreen from '../screens/quiz/QuizScreen';
+import ResultScreen from '../screens/quiz/ResultScreen';
 import SelectQuizTypeScreen from '../screens/quiz/SelectQuizType';
 import ScoreboardScreen from '../screens/scoreboard/ScoreboardScreen';
 import SplashScreen from '../screens/SplashScreen';
@@ -44,6 +45,7 @@ function RootNavigator() {
       <Stack.Screen name="HOME" component={HomeScreen} />
       <Stack.Screen name="SELECT_QUIZ_TYPE" component={SelectQuizTypeScreen} />
       <Stack.Screen name="QUIZ" component={QuizScreen} />
+      <Stack.Screen name="RESULT" component={ResultScreen} />
       <Stack.Screen name="SCOREBOARD" component={ScoreboardScreen} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
