@@ -16,6 +16,8 @@ export default function ResultScreen() {
     const params = route.params;
 
     console.log(params)
+    var minutes = Math.floor(params.totalTime / 60);
+    var seconds = params.totalTime - minutes * 60;
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
@@ -36,8 +38,8 @@ export default function ResultScreen() {
                         {selectionTitle(`${params.incorrectAnswer}`)}
                     </View>
                     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                        {selectionTitle("Duration:")}
-                        {selectionTitle(`${params.totalTime}`)}
+                        {selectionTitle("Duration (m:s):")}
+                        {selectionTitle(`${minutes}:${seconds}`)}
                     </View>
                 </View>
                 <TouchableOpacity onPress={() => {

@@ -11,12 +11,6 @@ export default function ScoreboardScreen() {
 
     const [scoreboard, setScoreboard] = useState<any>([]);
     var tableHead = ['Date', 'Duration\n(m:s)', 'Correct', 'Incorrect'];
-    var tableData = [
-        ['1', '2', '3', '4'],
-        ['a', 'b', 'c', 'd'],
-        ['1', '2', '3', '456\n789'],
-        ['a', 'b', 'c', 'd']
-    ]
 
     useEffect(() => {
         getScoreboard();
