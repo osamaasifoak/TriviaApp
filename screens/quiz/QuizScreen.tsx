@@ -19,7 +19,7 @@ export default function QuizScreen() {
     const [loading, setLoading] = useState<boolean>(true);
     const [disabledOtionTab, setDisabledOtionTab] = useState<boolean>(false);
     const [seconds, setSeconds] = React.useState<any>(10);
-    const [questionCount, setQuestionCount] = React.useState<number>(0);
+    const [questionCount, setQuestionCount] = React.useState<number>(1);
     const [quizData, setQuizData] = useState<SortBy[]>([]);
     const [selectedAnswer, setSelectedAnswer] = useState<any>(null);
     const params = route.params;
@@ -85,7 +85,7 @@ export default function QuizScreen() {
         if (seconds > 0 && (selectedAnswer === null || selectedAnswer === undefined)) {
             setTimeout(() => setSeconds(seconds - 1), 1000);
         } else {
-            if (quizData.length - 1 !== questionCount) {
+            if (quizData.length !== questionCount) {
                 // setSeconds(10);
                 // setQuestionCount((prev) => prev + 1)
                 if (selectedAnswer === null || selectedAnswer === undefined) {
@@ -96,10 +96,10 @@ export default function QuizScreen() {
                     })
                     setCalculatingResult({
                         ...calculatingResult,
-                        totalTime: calculatingResult.totalTime + seconds,
+                        totalTime: calculatingResult.totalTime + (10 - seconds),
                     })
                 }
-                setSelectedAnswer(quizData[questionCount].correctAnswer)
+                setSelectedAnswer(quizData[questionCount - 1].correctAnswer)
                 setDisabledOtionTab(false)
 
                 console.log(quizData, questionCount)
@@ -116,11 +116,9 @@ export default function QuizScreen() {
         setSeconds(0)
         console.log(calculatingResult)
     }
-    async function setCalculateResult(userSelectedAnwer: any) {
-        let i = 0;
-        console.log("this is running :", i++)
-        if (quizData.length - 1 !== questionCount) {
-            if (userSelectedAnwer === quizData[questionCount].correctAnswer) {
+    async function setCalculateResult(userSelectedAnwer: any, finishQuiz?: boolean) {
+        if ((quizData.length !== questionCount && finishQuiz === undefined) || finishQuiz === true) {
+            if (userSelectedAnwer === quizData[questionCount - 1].correctAnswer) {
                 setCalculatingResult({
                     ...calculatingResult,
                     correctAnswer: calculatingResult.correctAnswer++,
@@ -128,7 +126,7 @@ export default function QuizScreen() {
                 })
                 setCalculatingResult({
                     ...calculatingResult,
-                    totalTime: calculatingResult.totalTime + seconds,
+                    totalTime: calculatingResult.totalTime + (10 - seconds),
 
                 })
 
@@ -139,7 +137,7 @@ export default function QuizScreen() {
                 })
                 setCalculatingResult({
                     ...calculatingResult,
-                    totalTime: calculatingResult.totalTime + seconds,
+                    totalTime: calculatingResult.totalTime + (10 - seconds),
                 })
             }
 
@@ -165,6 +163,7 @@ export default function QuizScreen() {
     };
     if (!loading) {
         console.log(calculatingResult)
+        // let tempQuestionCount = questionCount;
         return (
 
             <SafeAreaView style={{ flex: 1 }}>
@@ -173,10 +172,10 @@ export default function QuizScreen() {
                         <Text style={styles.title}>Timer </Text>
                         <Text style={styles.title}>{seconds}</Text>
                     </View>
-                    {selectionTitle(`Q${questionCount}) ${quizData[questionCount].question}`)}
+                    {selectionTitle(`Q${questionCount}) ${quizData[questionCount - 1].question}`)}
                     <View style={{ marginVertical: 10 }}></View>
                     {
-                        quizData[questionCount].incorrectAnswers.map((e, index) =>
+                        quizData[questionCount - 1].incorrectAnswers.map((e, index) =>
                             <TouchableOpacity key={index} onPress={() => { onPressAnswer(e) }} disabled={disabledOtionTab}>
                                 <View style={{
                                     width: "100%",
@@ -191,8 +190,10 @@ export default function QuizScreen() {
                         )
                     }
 
-                    {(selectedAnswer !== null || quizData.length - 1 === questionCount) ? <TouchableOpacity onPress={async () => {
-                        if (quizData.length - 1 === questionCount) {
+                    {(selectedAnswer !== null || quizData.length === questionCount) ? <TouchableOpacity onPress={async () => {
+                        if (quizData.length === questionCount) {
+                            console.log(selectedAnswer);
+                            setCalculateResult(selectedAnswer, true)
                             await storeData()
 
                             // navigation.dispatch(CommonActions.reset({
@@ -218,7 +219,7 @@ export default function QuizScreen() {
                         <View style={styles.btnContainer}
                             lightColor="#eee"
                             darkColor="rgba(255,255,255,0.1)" >
-                            <Text style={[styles.title, { color: "#ffffff" }]}>{quizData.length - 1 === questionCount ? 'Finish' : 'Next'}</Text>
+                            <Text style={[styles.title, { color: "#ffffff" }]}>{quizData.length === questionCount ? 'Finish' : 'Next'}</Text>
                         </View>
                     </TouchableOpacity> : null}
                 </View>
@@ -260,10 +261,10 @@ export default function QuizScreen() {
         if (selectedAnswer === null || selectedAnswer === undefined) {
             return "#eee";
         }
-        else if (selectedAnswer === value && quizData[questionCount].correctAnswer === selectedAnswer) {
+        else if (selectedAnswer === value && quizData[questionCount - 1].correctAnswer === selectedAnswer) {
             return "#26c93f";
         }
-        else if (quizData[questionCount].correctAnswer === value) {
+        else if (quizData[questionCount - 1].correctAnswer === value) {
             return "#26c93f";
         }
         else {

@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function ScoreboardScreen() {
 
     const [scoreboard, setScoreboard] = useState<any>([]);
-    var tableHead = ['Date', 'Duration\n(m:s)', 'Correct', 'Incorrect'];
+    var tableHead = ['Date', 'Duration\n(mm:ss)', 'Correct', 'Incorrect'];
 
     useEffect(() => {
         getScoreboard();
@@ -26,10 +26,12 @@ export default function ScoreboardScreen() {
             var finalItems = [];
             parsedJson.forEach((e) => {
                 let item = [];
-                var minutes = Math.floor(e.totalTime / 60);
-                var seconds = e.totalTime - minutes * 60;
+                var date = new Date(0);
+                date.setSeconds(e.totalTime); // specify value for SECONDS here
+                var timeString = date.toISOString().substr(14, 5);
                 item.push(e.dateTime.toString())
-                item.push(`${minutes}:${seconds}`)
+                // item.push(`${minutes}:${seconds}`)
+                item.push(`${timeString}`)
                 item.push(e.correctAnswer.toString())
                 item.push(e.incorrectAnswer.toString())
                 // item.push(e.totalQuestion)

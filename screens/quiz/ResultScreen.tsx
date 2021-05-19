@@ -14,10 +14,9 @@ export default function ResultScreen() {
     const navigation = useNavigation<HomeScreenNavigationProp>();
     const route = useRoute<ResultScreenRouteProp>();
     const params = route.params;
-
-    console.log(params)
-    var minutes = Math.floor(params.totalTime / 60);
-    var seconds = params.totalTime - minutes * 60;
+    var date = new Date(0);
+    date.setSeconds(params.totalTime); // specify value for SECONDS here
+    var timeString = date.toISOString().substr(14, 5);
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
@@ -38,12 +37,12 @@ export default function ResultScreen() {
                         {selectionTitle(`${params.incorrectAnswer}`)}
                     </View>
                     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                        {selectionTitle("Duration (m:s):")}
-                        {selectionTitle(`${minutes}:${seconds}`)}
+                        {selectionTitle("Duration (mm:ss):")}
+                        {selectionTitle(`${timeString}`)}
                     </View>
                 </View>
                 <TouchableOpacity onPress={() => {
-                      navigation.dispatch(CommonActions.reset({
+                    navigation.dispatch(CommonActions.reset({
                         index: 0, routes: [
                             {
                                 name: Routes.HOME
